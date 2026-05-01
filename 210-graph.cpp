@@ -209,20 +209,58 @@ int main() {
     // Creates graph
     Graph graph(edges);
 
-    // Prints the campus shuttle network representation
-    graph.printGraph(stopNames);
+    int choice = -1;
 
-    graph.dfs(0, stopNames);
-    graph.bfs(0, stopNames);
+    do {
+        cout << "Campus Shuttle Network Menu:" << endl;
+        cout << "[1] Display campus shuttle network" << endl;
+        cout << "[2] Check contaminant spread (BFS)" << endl;
+        cout << "[3] Plan inspection route  (DFS)" << endl;
+        cout << "[4] Calculate shortest paths" << endl;
+        cout << "[5] Find Minimum Spanning Tree" << endl;
+        cout << "[0] Exit" << endl;
+        cout << "Enter your choice: ";
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a number from 0 to 5." << endl;
+            cout << endl;
+            continue;
+        }
 
-    vector<int> distances = graph.shortestPaths(0);
-    cout << endl;
-    cout << "Shortest path from node 0:" << endl;
-    for (int i = 0; i < distances.size(); i++) {
-        cout << 0 << " -> " << i << " : " << distances[i] << endl;
-    }
+        cout << endl;
 
-    graph.printMinimumSpanningTree(0);
+        switch (choice) {
+            case 1:
+                graph.printGraph(stopNames);
+                break;
+            case 2:
+                graph.bfs(0, stopNames);
+                break;
+            case 3:
+                graph.dfs(0, stopNames);
+                break;
+            case 4: {
+                vector<int> distances = graph.shortestPaths(0);
+                cout << "Shortest path from node 0:" << endl;
+                for (int i = 0; i < distances.size(); i++) {
+                    cout << 0 << " -> " << i << " : " << distances[i] << endl;
+                }
+                break;
+            }
+            case 5:
+                graph.printMinimumSpanningTree(0);
+                break;
+            case 0:
+                cout << "Goodbye." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+                break;
+        }
+
+        cout << endl;
+    } while (choice != 0);
 
     return 0;
 }
