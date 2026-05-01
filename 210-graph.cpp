@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include <queue>
 #include <string>
 #include <vector>
@@ -142,6 +143,47 @@ public:
 
         return distances;
     }
+
+    void printMinimumSpanningTree(int startVertex) {
+        vector<bool> visited(adjList.size(), false);
+        vector<int> parent(adjList.size(), -1);
+        vector<int> key(adjList.size(), numeric_limits<int>::max());
+        priority_queue<Pair, vector<Pair>, greater<Pair>> minHeap;
+
+        key[startVertex] = 0;
+        minHeap.push(make_pair(0, startVertex));
+
+        cout << endl;
+        cout << "Minimum Spanning Tree edges:" << endl;
+
+        while (!minHeap.empty()) {
+            int currentWeight = minHeap.top().first;
+            int currentVertex = minHeap.top().second;
+            minHeap.pop();
+
+            if (visited[currentVertex]) {
+                continue;
+            }
+
+            visited[currentVertex] = true;
+
+            if (parent[currentVertex] != -1) {
+                cout << "Edge from " << currentVertex << " to " << parent[currentVertex]
+                     << " with capacity: " << currentWeight << " units" << endl;
+            }
+
+            for (const Pair &neighbor : adjList[currentVertex]) {
+                int nextVertex = neighbor.first;
+                int edgeWeight = neighbor.second;
+
+                if (!visited[nextVertex] && edgeWeight < key[nextVertex]) {
+                    key[nextVertex] = edgeWeight;
+                    parent[nextVertex] = currentVertex;
+                    minHeap.push(make_pair(edgeWeight, nextVertex));
+                }
+            }
+        }
+    }
 };
 
 int main() {
@@ -179,6 +221,8 @@ int main() {
     for (int i = 0; i < distances.size(); i++) {
         cout << 0 << " -> " << i << " : " << distances[i] << endl;
     }
+
+    graph.printMinimumSpanningTree(0);
 
     return 0;
 }
