@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <string>
 #include <vector>
 using namespace std;
 
@@ -35,21 +36,29 @@ public:
     }
 
     // Print the graph's adjacency list
-    void printGraph() {
-        cout << "Graph's adjacency list:" << endl;
+    void printGraph(const vector<string> &labels) {
+        cout << "Campus Shuttle Network Topology:" << endl;
+        cout << "================================" << endl;
         for (int i = 0; i < adjList.size(); i++) {
-            cout << i << " --> ";
-            for (Pair v : adjList[i])
-                cout << "(" << v.first << ", " << v.second << ") ";
+            cout << "Stop " << i << " (" << labels[i] << ") connects to:" << endl;
+            for (Pair v : adjList[i]) {
+                cout << "  -> Stop " << v.first << " (" << labels[v.first] << ", "
+                     << v.second << " minutes)" << endl;
+            }
             cout << endl;
         }
     }
 
-    void dfs(int startVertex) {
+    void dfs(int startVertex, const vector<string> &labels) {
         vector<bool> visited(adjList.size(), false);
         vector<int> stack;
 
         stack.push_back(startVertex);
+
+        cout << "Campus Shuttle Trace (DFS) from Stop " << startVertex << " (" << labels[startVertex]
+             << "):" << endl;
+        cout << "Purpose: Tracing one possible route across campus" << endl;
+        cout << "=======================================" << endl;
 
         while (!stack.empty()) {
             int currentVertex = stack.back();
@@ -60,44 +69,62 @@ public:
             }
 
             visited[currentVertex] = true;
-            cout << currentVertex << " ";
+            cout << "Inspecting Stop " << currentVertex << " (" << labels[currentVertex] << ")" << endl;
 
             for (const Pair &neighbor : adjList[currentVertex]) {
                 if (!visited[neighbor.first]) {
+                    cout << "  -> Potential route to Stop " << neighbor.first << " (" << labels[neighbor.first]
+                         << ") - " << neighbor.second << " minutes" << endl;
                     stack.push_back(neighbor.first);
                 }
             }
         }
-
-        cout << endl;
     }
 
-    void bfs(int startVertex) {
+    void bfs(int startVertex, const vector<string> &labels) {
         vector<bool> visited(adjList.size(), false);
         queue<int> verticesToVisit;
 
         visited[startVertex] = true;
         verticesToVisit.push(startVertex);
 
+        cout << "" << endl;
+        cout << "Campus Shuttle Coverage (BFS) from Stop " << startVertex << " (" << labels[startVertex]
+             << "):" << endl;
+        cout << "Purpose: Analyzing nearby stops by travel layer" << endl;
+        cout << "==============================================" << endl;
+
         while (!verticesToVisit.empty()) {
             int currentVertex = verticesToVisit.front();
             verticesToVisit.pop();
 
-            cout << currentVertex << " ";
+            cout << "Checking Stop " << currentVertex << " (" << labels[currentVertex] << ")" << endl;
 
             for (const Pair &neighbor : adjList[currentVertex]) {
                 if (!visited[neighbor.first]) {
+                    cout << "  -> Next service area: Stop " << neighbor.first << " (" << labels[neighbor.first]
+                         << ") - " << neighbor.second << " minutes" << endl;
                     visited[neighbor.first] = true;
                     verticesToVisit.push(neighbor.first);
                 }
             }
         }
-
-        cout << endl;
     }
 };
 
 int main() {
+    vector<string> stopNames = {
+        "Campus Transit Center",
+        "Student Union",
+        "Library",
+        "Engineering Hall",
+        "Science Center",
+        "Residence Hall",
+        "Recreation Center",
+        "Parking Garage",
+        "Administration Building"
+    };
+
     // Creates a vector of graph edges/weights
     vector<Edge> edges = {
         // (x, y, w) —> edge from x to y having weight w
@@ -108,14 +135,11 @@ int main() {
     // Creates graph
     Graph graph(edges);
 
-    // Prints adjacency list representation of graph
-    graph.printGraph();
+    // Prints the campus shuttle network representation
+    graph.printGraph(stopNames);
 
-    cout << "DFS starting from vertex 0:" << endl;
-    graph.dfs(0);
-
-    cout << "BFS starting from vertex 0:" << endl;
-    graph.bfs(0);
+    graph.dfs(0, stopNames);
+    graph.bfs(0, stopNames);
 
     return 0;
 }
