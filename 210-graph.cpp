@@ -2,6 +2,7 @@
 #include <queue>
 #include <string>
 #include <vector>
+#include <limits>
 using namespace std;
 
 const int SIZE = 9;
@@ -110,6 +111,37 @@ public:
             }
         }
     }
+
+    vector<int> shortestPaths(int startVertex) {
+        vector<int> distances(adjList.size(), numeric_limits<int>::max());
+        priority_queue<Pair, vector<Pair>, greater<Pair>> minHeap;
+
+        distances[startVertex] = 0;
+        minHeap.push(make_pair(0, startVertex));
+
+        while (!minHeap.empty()) {
+            int currentDistance = minHeap.top().first;
+            int currentVertex = minHeap.top().second;
+            minHeap.pop();
+
+            if (currentDistance > distances[currentVertex]) {
+                continue;
+            }
+
+            for (const Pair &neighbor : adjList[currentVertex]) {
+                int nextVertex = neighbor.first;
+                int edgeWeight = neighbor.second;
+
+                if (distances[currentVertex] != numeric_limits<int>::max() &&
+                    distances[currentVertex] + edgeWeight < distances[nextVertex]) {
+                    distances[nextVertex] = distances[currentVertex] + edgeWeight;
+                    minHeap.push(make_pair(distances[nextVertex], nextVertex));
+                }
+            }
+        }
+
+        return distances;
+    }
 };
 
 int main() {
@@ -140,6 +172,13 @@ int main() {
 
     graph.dfs(0, stopNames);
     graph.bfs(0, stopNames);
+
+    vector<int> distances = graph.shortestPaths(0);
+    cout << endl;
+    cout << "Shortest path from node 0:" << endl;
+    for (int i = 0; i < distances.size(); i++) {
+        cout << 0 << " -> " << i << " : " << distances[i] << endl;
+    }
 
     return 0;
 }
